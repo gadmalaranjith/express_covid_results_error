@@ -59,9 +59,20 @@ app.get("/states/:stateId/", async (request, response) => {
   const stateArray = await db.get(getStateDetails);
   response.send(stateArray);
 });
+//create districts
+app.post("/districts/", async (request, response) => {
+  const { districtName, stateId, cases, cured, active, deaths } = request.body;
+  const postDistrictQuery = `
+  INSERT INTO
+    district (district_name, state_id,  cases, cured, active, deaths)
+  VALUES
+    (${stateId}, '${districtName}', ${cases}, ${cured}, ${active}, ${deaths});`;
+  await db.run(postDistrictQuery);
+  response.send("District Successfully Added");
+});
 
 //get districts
-app.get("/districts/:districtId", async (request, response) => {
+app.get("/districts/:districtId/", async (request, response) => {
   const { districtId } = request.params;
   const getDistrictDetails = `
     SELECT *
@@ -70,26 +81,6 @@ app.get("/districts/:districtId", async (request, response) => {
         district_id=${districtId};`;
   const districtArray = await db.get(getDistrictDetails);
   response.send(districtArray);
-});
-//create districts
-app.post("/districts/", async (request, response) => {
-  const { stateId, districtName, cases, cured, active, deaths } = request.body;
-  const postDistrictQuery = `
-  INSERT INTO
-    district (state_id, district_name, cases, cured, active, deaths)
-  VALUES
-    (${stateId}, '${districtName}', ${cases}, ${cured}, ${active}, ${deaths});`;
-  await db.run(postDistrictQuery);
-  response.send("District Successfully Added");
-});
-
-//get districts
-app.get("/districts/", async (request, response) => {
-  const getDistrictsDetails = `
-    SELECT *
-    FROM district;`;
-  const districtsArray = await db.get(getDistrictsDetails);
-  response.send(districtsArray);
 });
 //delete district
 
